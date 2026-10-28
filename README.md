@@ -1,4 +1,4 @@
-# Jugan Gym - BMC Finals E-Commerce App
+# Baldo And Jugan Gym - BMC Finals E-Commerce App
 
 A Flutter mobile app with a protein/calorie calculator, workout log, rest timer, water tracker and a gym shop.
 Backend: **Supabase** (login, database, realtime). Online payment: **Xendit** (GCash, Maya, cards, banks).
