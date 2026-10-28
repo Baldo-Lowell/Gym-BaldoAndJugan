@@ -1,66 +1,47 @@
-# Jugan Gym (Flutter + Supabase + Xendit)
+# Jugan Gym - BMC Finals E-Commerce App
 
-## 1. Create the Flutter project files
-This folder has `lib/main.dart`, `pubspec.yaml` and `supabase/`. Generate the
-Android/iOS folders around them once:
+A Flutter mobile app with a protein/calorie calculator, workout log, rest timer, water tracker and a gym shop.
+Backend: **Supabase** (login, database, realtime). Online payment: **Xendit** (GCash, Maya, cards, banks).
+
+## Features
+- User and Admin login (Supabase Auth)
+- Gym shop: equipment, protein powder, energy drinks, cart, checkout
+- Payment: Cash on delivery, or Online payment through Xendit
+- Admin panel: add/edit/delete products, manage stock, view and complete/cancel orders
+- Protein calculator, BMI/calories, workout log with 1RM, rest timer, water tracker
+
+## Installation
+
+### Option A: Install the APK (easiest)
+1. Download the APK from the link: **PASTE APK LINK HERE**
+2. Open it on an Android phone and allow "Install from unknown sources".
+3. Log in with the accounts in the `.env` file.
+
+### Option B: Run from source
+Requirements: [Flutter SDK](https://docs.flutter.dev/get-started/install), VS Code or Android Studio.
 
 ```bash
+git clone PASTE-YOUR-GITHUB-REPO-URL
 cd myapp
-flutter create . --project-name myapp --org com.jugan
 flutter pub get
+flutter run -d chrome \
+  --dart-define=SUPABASE_URL=<SUPABASE_URL from .env> \
+  --dart-define=SUPABASE_ANON_KEY=<SUPABASE_ANON_KEY from .env>
 ```
-(If it asks to overwrite `lib/main.dart`, keep yours.)
 
-## 2. Supabase
-1. Create a project at https://supabase.com
-2. **SQL Editor** > paste all of `supabase/schema.sql` > Run.
-3. **Authentication > Providers > Email**: enabled, keep **Confirm email** ON
-   (this protects the admin email from being taken by someone else).
-4. **Authentication > Users > Add user**: create the admin with the email in
-   `kAdminEmails` (`jugan.johnmark.bandico@gmail.com`) and a strong password.
-5. **Project Settings > API**: copy the Project URL and the `anon` key.
-
-Run the app:
+Build an APK:
 ```bash
-flutter run \
-  --dart-define=SUPABASE_URL=https://xxxx.supabase.co \
-  --dart-define=SUPABASE_ANON_KEY=your-anon-key
+flutter build apk --release --dart-define=SUPABASE_URL=<...> --dart-define=SUPABASE_ANON_KEY=<...>
 ```
-(or paste them as the defaults at the top of `lib/main.dart`).
 
-## 3. Xendit (online payment: GCash, Maya, cards, banks)
-1. Get your **Secret API key** (Xendit Dashboard > Settings > API Keys; use the
-   test key first).
-2. Deploy the two functions:
-```bash
-npm i -g supabase
-supabase login
-supabase link --project-ref <your-project-ref>
+## Supabase setup (only if using your own project)
+1. Create a project at supabase.com.
+2. SQL Editor: run `supabase/schema.sql`.
+3. Authentication > Users: create the admin user (email in `kAdminEmails` in `lib/main.dart`).
+4. Deploy the Edge Functions in `supabase/functions/` (`create-xendit-invoice`, `xendit-webhook`) and set the secrets `XENDIT_SECRET_KEY` and `XENDIT_WEBHOOK_TOKEN`.
 
-supabase secrets set XENDIT_SECRET_KEY=xnd_development_xxxxxxxx
-supabase secrets set XENDIT_WEBHOOK_TOKEN=<verification token from Xendit webhooks page>
+## Test accounts
+See the `.env` file (admin and user logins). Payments use Xendit **test mode**: no real money is charged.
 
-supabase functions deploy create-xendit-invoice
-supabase functions deploy xendit-webhook --no-verify-jwt
-```
-3. Xendit Dashboard > Settings > Webhooks: set **Invoices paid** and
-   **Invoices expired** to
-   `https://<your-project-ref>.supabase.co/functions/v1/xendit-webhook`
-
-How a purchase flows:
-1. App calls `place_order` (stock checked + lowered, order saved, price from DB).
-2. For online payment, the app calls `create-xendit-invoice` and opens the
-   Xendit page.
-3. Xendit calls `xendit-webhook` when paid / expired.
-4. The webhook marks the order paid (or cancels it and restores stock), and the
-   payment dialog in the app updates live through Realtime.
-
-## Security notes
-- The Xendit secret key and the Supabase `service_role` key stay on the server
-  only. Never put them in the app.
-- Orders can only be created through `place_order`, so customers cannot fake
-  prices or skip stock checks.
-- Admin rights come from the verified email in the login token
-  (`public.is_admin()`), so keep **Confirm email** ON.
-- A cancelled order that was paid anyway keeps `payment_status = paid`: refund
-  it from the Xendit dashboard.
+## Tech stack
+Flutter, Supabase (Postgres, Auth, Realtime, Edge Functions), Xendit.
