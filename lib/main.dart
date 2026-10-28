@@ -15,11 +15,10 @@ import 'package:url_launcher/url_launcher.dart';
 //               --dart-define=SUPABASE_ANON_KEY=your-anon-key
 // The anon key is safe to ship in the app (Row Level Security protects data).
 // NEVER put the Xendit secret key or the Supabase service_role key in this app.
-const String kSupabaseUrl = String.fromEnvironment('SUPABASE_URL',
-    defaultValue: 'https://YOUR-PROJECT.supabase.co');
+const String kSupabaseUrl = 'https://ucysoikplkcjagaftihg.supabase.co';
 const String kSupabaseAnonKey =
-    String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: 'YOUR-ANON-KEY');
-
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjeXNvaWtwbGtjamFnYWZ0aWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNzg5OTcsImV4cCI6MjEwODc1NDk5N30.ELSQBX9oSoyAaT_lceDLCUju6H_8989WyB159Q1fQ-4';
+ 
 SupabaseClient get db => Supabase.instance.client;
 
 // ────────── APP + NAVIGATION ──────────
